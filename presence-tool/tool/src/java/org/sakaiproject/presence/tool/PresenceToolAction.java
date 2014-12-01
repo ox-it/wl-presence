@@ -21,10 +21,7 @@
 
 package org.sakaiproject.presence.tool;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 import org.sakaiproject.authz.cover.SecurityService;
 import org.sakaiproject.cheftool.Context;
@@ -183,19 +180,19 @@ public class PresenceToolAction extends VelocityPortletPaneledAction
 			template += ".servers-List";
 
 			// get the set of all servers with current presence
-			Map<String,List<UsageSession>> servers = UsageSessionService.getOpenSessionsByServer();
-			context.put("servers", servers);
-
-			List<String> serverList = new Vector<String>();
-			serverList.addAll(servers.keySet());
-			Collections.sort(serverList);
-			context.put("serverList", serverList);
+			Map<String,List<UsageSession>> session = UsageSessionService.getOpenSessionsByServer();
+			context.put("serverSessions", session);
 
 			Map<String, ClusterService.Status>status = clusterService.getServerStatus();
-			context.put("status", status);
+			context.put("serverStatus", status);
+
+			Set<String> serverList = new TreeSet<String>();
+			serverList.addAll(status.keySet());
+			serverList.addAll(session.keySet());
+			context.put("serverList", serverList);
 
 			int count = 0;
-			for (List<UsageSession> sessions : servers.values())
+			for (List<UsageSession> sessions : session.values())
 			{
 				count += sessions.size();
 			}
